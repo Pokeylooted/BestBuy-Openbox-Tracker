@@ -88,19 +88,19 @@ function upsertProduct(product) {
                 });
             } else {
                 // Insert new product
-                db.run(`INSERT INTO products (skuId, imageSrc, productTitle, productLink, originalPrice, currentPrice, inStoreAvailability) VALUES (?, ?, ?, ?, ?, ?, ?)`, [skuId || "ErrorFindingSkuID", imageSrc, productTitle, productLink, originalPrice, currentPrice, inStoreAvailability])
-                .catch(err => {
-                    if (err.code === 'SQLITE_CONSTRAINT') {
-                        // Handle unique constraint error
-                        console.error(`Product with skuId ${skuId} already exists.`);
+                db.run(`INSERT INTO products (skuId, imageSrc, productTitle, productLink, originalPrice, currentPrice, inStoreAvailability) VALUES (?, ?, ?, ?, ?, ?, ?)`, [skuId || "ErrorFindingSkuID", imageSrc, productTitle, productLink, originalPrice, currentPrice, inStoreAvailability], function(err) {
+                    if (err) {
+                        if (err.code === 'SQLITE_CONSTRAINT') {
+                            // Handle unique constraint error
+                            console.error(`Product with skuId ${skuId} already exists.`);
+                        } else {
+                            // Re-throw other errors
+                            throw err;
+                        }
                     } else {
-                        // Re-throw other errors
-                        throw err;
+                        resolve({ identifier: skuId || "ErrorFindingSkuID", inserted: true });
                     }
-                })
-                .then(() => {
-                    resolve({ identifier: skuId || "ErrorFindingSkuID", inserted: true });
-                });            }
+                });         }
         });
     });
 }

@@ -25,13 +25,13 @@ function delay(time) {
                     clearInterval(timer);
                     resolve();
                 }
-            }, 100);
+            }, 250);
         });
     });
 }  
 puppeteer.use(StealthPlugin(), AdblockerPlugin({interceptResolutionPriority:DEFAULT_INTERCEPT_RESOLUTION_PRIORITY}))
 async function scrapeOpenBoxDeals(zipCode, url) {
-    const browser = await puppeteer.launch({headless:true});
+    const browser = await puppeteer.launch({headless:false, slowmo: 250});
     //const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 2380 });
@@ -48,27 +48,38 @@ async function scrapeOpenBoxDeals(zipCode, url) {
     console.log('Zip code entered')
 
     await page.goto(url, { waitUntil: 'domcontentloaded' });
+    await delay(2500)
+    await page.waitForSelector('.fulfillment-fulfillment-summary .c-button-link', { visible: true });
+    await page.click('.fulfillment-fulfillment-summary .c-button-link div');
+    await page.waitForSelector('.popover-content.spinnable.not-spinning', { visible: true });
+    await page.type('.popover-content.spinnable.not-spinning input[placeholder="ZIP or City, State"]', zipCode, { delay: 100 });
+    await page.click('.popover-content.spinnable.not-spinning [data-track="Delivery Location Modal: Update Button"]');
+    await page.waitForSelector('.component-sku-list .sku-item .open-box-lowest-price');
+    await delay(1200)
     await autoScroll(page);
     await delay(3000); // Wait for 3 seconds to ensure all content is loaded
     console.log('Page loaded');
     // console.log('Cookies:', await page.cookies());
     await delay(5000);
-    console.log('Zip code entered');
+    const element = await page.$('.fulfillment-fulfillment-summary .c-button-link div');
+    if (element) {
+        throw new Error('ZipCode not entered correctly');
+    }
     const products = await page.evaluate(() => {
         const scrapedData = [];
         document.querySelectorAll('.sku-item').forEach(item => {
             const skuIdElement = item.querySelector('.sku-value');
             const skuId = skuIdElement?.innerText;
             const imageSrc = item.querySelector('img')?.src;
-            const titleElement = item.querySelector('h4');
+            const titleElement = item.querySelector('.sku-title a');
             const productTitle = titleElement?.innerText;
-            const productLink = titleElement?.parentElement.href;
+            const productLink = titleElement?.href;
             const originalPriceElement = item.querySelector('.priceView-buy-new-option__price-medium');
             const originalPrice = originalPriceElement?.innerText;
             const currentPriceElement = item.querySelector('.open-box-lowest-price');
             const currentPrice = currentPriceElement?.innerText;
-            const inStoreAvailabilityText = "Several available in your area";
-            const inStoreAvailability = item.textContent.includes(inStoreAvailabilityText);
+            const inStoreAvailabilityElement = item.querySelector('.fulfillment-fulfillment-summary span');
+            const inStoreAvailability = inStoreAvailabilityElement?.innerText;
 
             scrapedData.push({
                 skuId,
@@ -90,7 +101,6 @@ async function scrapeOpenBoxDeals(zipCode, url) {
     console.log('Unique products found:', uniqueSkuIds);
     console.log('products found:', uniqueSkuIds.length);
     markProductsAsRemoved(skuIds);
-    await delay(3000);
     await browser.close();
 }
 
@@ -112,5 +122,20 @@ if (isValidUrl(url) == false) {
     return;
 }
 
-scrapeOpenBoxDeals(zipCode=zipCode, url=url);
+(async () => {
+    let attempts = 0;
+    const maxAttempts = 3;
 
+    while (attempts < maxAttempts) {
+        try {
+            await scrapeOpenBoxDeals(zipCode, url);
+            break; // If it succeeds, break the loop
+        } catch (error) {
+            console.error(`Attempt ${attempts + 1} failed with error: ${error}`);
+            attempts++;
+            if (attempts === maxAttempts) {
+                console.error('All attempts failed. Giving up.');
+            }
+        }
+    }
+})();
