@@ -104,9 +104,6 @@ function isValidUrl(string) {
     return true;
 }
 
-zipCode = "74133";
-url = "https://www.bestbuy.com/site/searchpage.jsp?_dyncharset=UTF-8&browsedCategory=pcmcat287600050002&id=pcat17071&iht=n&ks=960&list=y&qp=condition_facet%3DCondition~Open-Box&sc=Global&st=categoryid%24pcmcat287600050002&type=page&usc=All%20Categories";
-
 const zipCode = process.env.ZIP_CODE;
 const url = process.env.URL;
 
