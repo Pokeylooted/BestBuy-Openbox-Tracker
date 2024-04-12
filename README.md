@@ -1,4 +1,4 @@
-# BestBuy Product Display
+# BestBuy Product Tracker
 
 This project is a tracker for BestBuy, it will goto the site look for all the items under a certain category. In my case I made it for specifically openbox items however that can be easily disabled within the scraper.js in api. Currently it only shows a website however soon plan on other notification sources.
 
