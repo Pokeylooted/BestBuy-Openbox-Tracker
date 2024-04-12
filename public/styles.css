@@ -1,0 +1,109 @@
+body.dark-mode {
+    background-color: #121212;
+    color: white;
+    font-family: 'Arial', sans-serif;
+}
+
+#products-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+.product-card {
+    position: relative;
+    background-color: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+}
+
+.product-card:hover .product-info,
+.product-card:hover .product-image {
+    opacity: 0.3;
+}
+
+.product-timestamps {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #222; /* Darker font color for better readability */
+    z-index: 11; /* Ensure it's above other content */
+    display: none; /* Initially hidden */
+    background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent background */
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 0.8em;
+}
+
+.product-card:hover .product-timestamps {
+    display: block;
+}
+
+.product-image-container {
+    background-color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.product-image {
+    max-width: 100%;
+    height: auto;
+}
+
+.product-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.product-title, .product-price {
+    margin: 10px 0;
+}
+
+.product-title a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+@media (max-width: 1024px) {
+    .product-card {
+        width: calc(100%/3 - 30px);
+    }
+}
+
+@media (max-width: 768px) {
+    .product-card {
+        width: calc(100%/2 - 20px);
+    }
+}
+
+@media (max-width: 480px) {
+    .product-card {
+        width: 100%;
+    }
+}
+
+/* This applies to the whole body in dark mode */
+body.dark-mode::-webkit-scrollbar {
+    width: 10px;
+}
+
+body.dark-mode::-webkit-scrollbar-track {
+    background: #333;
+}
+
+body.dark-mode::-webkit-scrollbar-thumb {
+    background: #222;
+    border-radius: 5px;
+}
+
+body.dark-mode::-webkit-scrollbar-thumb:hover {
+    background: #111;
+}
