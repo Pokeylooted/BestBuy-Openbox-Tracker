@@ -61,7 +61,7 @@ async function scrapeOpenBoxDeals(zipCode, url) {
     console.log('Page loaded');
     // console.log('Cookies:', await page.cookies());
     await delay(5000);
-    const element = await page.$('.fulfillment-fulfillment-summary .c-button-link div');
+    const element = await page.$('.zip-code-input');
     if (element) {
         throw new Error('ZipCode not entered correctly');
     }
