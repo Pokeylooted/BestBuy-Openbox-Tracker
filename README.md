@@ -3,7 +3,12 @@
 This project is a tracker for BestBuy, it will goto the site look for all the items under a certain category. In my case I made it for specifically openbox items however that can be easily disabled within the scraper.js in api. Currently it only shows a website however soon plan on other notification sources.
 
 ## Planned features
-
+- [] Remove all manual delays and replace them with network traffic awaits
+- [] Add a better way to check for zipcode entered
+- [] Docker container it
+- [] Webhooks and better notification
+- [] Small LLM to parse thru deals and find good ones
+- [] Filter system
 
 ## Project Structure
 
